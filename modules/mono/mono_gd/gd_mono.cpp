@@ -130,7 +130,17 @@ void gdmono_debug_init() {
 	}
 #endif
 
-	CharString da_args = String("--debugger-agent=transport=dt_socket,address=127.0.0.1:" + itos(da_port) +
+	CharString da_args;
+	List<String> cmdline_args = OS::get_singleton()->get_cmdline_args();
+
+	for (List<String>::Element *E = cmdline_args.front(); E; E = E->next()) {
+		if (E->get().find(String("--debugger-agent=")) == 0){
+			da_args = E->get().utf8();
+			break;
+		}
+	}
+	if (da_args == "")
+		da_args = String("--debugger-agent=transport=dt_socket,address=127.0.0.1:" + itos(da_port) +
 								",embedding=1,server=y,suspend=" + (da_suspend ? "y,timeout=" + itos(da_timeout) : "n"))
 								 .utf8();
 	// --debugger-agent=help
